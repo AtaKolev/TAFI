@@ -15,7 +15,7 @@ def smoothed_ma(high, low, smoothing_period, future_shift):
         smma = sum_prices / smoothing_period # smoothing the above sum by dividing with smoothing period
         median_prices.append(smma) # appending to median_prices list
 
-    return np.array(median_prices[-(starting_len+smoothing_period):]) # return only the smoothed moving averages from the median_prices list
+    return np.array(median_prices[-(len(high)):]) # return only the smoothed moving averages from the median_prices list
 
 
 ######################################################################################################################
