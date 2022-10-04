@@ -8,8 +8,6 @@ def smoothed_ma(high, low, smoothing_period, future_shift):
 
     median_prices = ((high + low) / 2).tolist() # high and low are pandas series, hence tolist() converts to python list, so append can be used
 
-    starting_len = len(median_prices) # length of median_prices
-
     for i in range(smoothing_period, len(high) + future_shift): # starts at smoothing_period, ends at length of high + future_shift
         sum_prices = sum(median_prices[i-smoothing_period:i]) # sum of median_prices at index i - smoothing period to i
         smma = sum_prices / smoothing_period # smoothing the above sum by dividing with smoothing period
