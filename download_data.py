@@ -76,8 +76,8 @@ def main_pipe(ticker = const.default_ticker, period_back = const.default_period_
     main_df[const.RSI] = RSI(main_df, win_length_RSI)
     main_df[const.slope] = slope(main_df[const.close_col], period_slope)
     main_df[const.close_shifted_col] = main_df[const.close_col].shift(-1).fillna(0)
-    main_df['Price_change'] = np.where(main_df[const.close_col] > (main_df[const.close_shifted_col] + (main_df[const.close_col] * 0.05)), 1,
-                                       np.where((main_df[const.close_col] <= (main_df[const.close_shifted_col] + (main_df[const.close_col] * close_shifted_tolerance))) & (main_df[const.close_col] > (main_df[const.close_shifted] - (main_df[const.close_col] * close_shifted_tolerance))), 0,
-                                                np.where(main_df[const.close_col] < (main_df[const.close_shifted_col] - (main_df[const.close_col] * 0.05)), -1, 2)))
+    main_df['Price_change'] = np.where(main_df[const.close_col] > (main_df[const.close_shifted_col] + (main_df[const.close_col] * close_shifted_tolerance)), 1,
+                                       np.where((main_df[const.close_col] <= (main_df[const.close_shifted_col] + (main_df[const.close_col] * close_shifted_tolerance))) & (main_df[const.close_col] > (main_df[const.close_shifted_col] - (main_df[const.close_col] * close_shifted_tolerance))), 0,
+                                                np.where(main_df[const.close_col] < (main_df[const.close_shifted_col] - (main_df[const.close_col] * close_shifted_tolerance)), -1, 2)))
 
     return main_df
