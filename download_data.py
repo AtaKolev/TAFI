@@ -73,11 +73,20 @@ def main_pipe(ticker = const.default_ticker, period_back = const.default_period_
 
     main_df = download_ticker(ticker, period_back, interval)
     main_df[const.upper_bound], main_df[const.lower_bound], main_df[const.rolling_mean + f'_{period_BB}'] = BolBands(main_df, period_BB)
-    main_df[const.RSI] = RSI(main_df, win_length_RSI)
+    #main_df[const.RSI] = RSI(main_df, win_length_RSI)
     main_df[const.slope] = slope(main_df[const.close_col], period_slope)
     main_df[const.close_shifted_col] = main_df[const.close_col].shift(-1).fillna(0)
-    main_df['Price_change'] = np.where(main_df[const.close_col] > (main_df[const.close_shifted_col] + (main_df[const.close_col] * close_shifted_tolerance)), 1,
+    main_df[const.price_change] = np.where(main_df[const.close_col] > (main_df[const.close_shifted_col] + (main_df[const.close_col] * close_shifted_tolerance)), 1,
                                        np.where((main_df[const.close_col] <= (main_df[const.close_shifted_col] + (main_df[const.close_col] * close_shifted_tolerance))) & (main_df[const.close_col] > (main_df[const.close_shifted_col] - (main_df[const.close_col] * close_shifted_tolerance))), 0,
                                                 np.where(main_df[const.close_col] < (main_df[const.close_shifted_col] - (main_df[const.close_col] * close_shifted_tolerance)), -1, 2)))
+    # signals: 'sell' = -1, 'buy' = 1, hold = 0, 2 = undefined
+    main_df[const.signal_from_bb] = np.where(main_df[const.close_col] > main_df[const.upper_bound], -1, 
+                                   np.where((main_df[const.close_col] <= main_df[const.upper_bound]) & (main_df[const.close_col] >= main_df[const.lower_bound]), 0,
+                                             np.where(main_df[const.close_col] < main_df[const.lower_bound], 1, 2)))
+    
+    main_df[const.slope_cat_col] = np.where((main_df[const.slope] <= 30) & (main_df[const.slope] >= -30), 0,
+                                            np.where(main_df[const.slope] > 30, 1, 
+                                                     np.where(main_df[const.slope] < -30, -1, 2)))
 
+    main_df = main_df.dropna()
     return main_df

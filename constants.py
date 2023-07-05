@@ -18,3 +18,6 @@ default_period_BB = 20
 default_win_length_RSI = 20
 default_period_slope = 5
 default_close_shifted_tolerance = 0.005
+signal_from_bb = 'signal_from_bb'
+price_change = 'price_change'
+slope_cat_col = 'slope_cat'
