@@ -164,7 +164,7 @@ def functions():
                 output = f"{ticker} successfully added to Stock Watchlist!"
             elif function == 'add a currency pair to watchlist':
                 ticker = str(boxes[2])
-                add_ticker(ticker, app.cpair_list)
+                add_ticker(ticker, app.cpair_watchlist)
                 output = f"{ticker} successfully added to CPair Watchlist!"
             elif function == 'print stock watchlist':
                 output = print_watchlist(app.stock_watchlist)
