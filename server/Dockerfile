@@ -31,4 +31,4 @@ RUN apt-get update \
 
 RUN pip3 install -r requirements.txt
 
-EXPOSE 3500
+EXPOSE 3000
