@@ -4,6 +4,7 @@ import logging, traceback
 from logging.handlers import RotatingFileHandler
 import send_email
 import download_data as dd
+import pandas as pd
 
 ################################################################################################################
 # APP VARIABLES
@@ -146,6 +147,32 @@ def log_visualization():
         text = ''
     
     return render_template('logs.html', title=title, text = text)
+
+@app.route('/display', methods = ['GET', 'POST'])
+def display():
+    title = 'TAFI: Display'
+    output = ''
+    df = pd.DataFrame()
+    if request.method == 'POST':
+        boxes = request.form.getlist('mycheckbox')
+        ticker = str(boxes[0])
+        period_back = str(boxes[1])
+        interval = str(boxes[2])
+        password = str(boxes[3])
+        if password == app.display_password:
+            try:
+                df = dd.main_pipe(ticker, period_back, interval)
+                output = 'Success!'
+            except Exception as e:
+                output = f"Failed because of\n {e}"
+        else:
+            output = f'<b style="color:red">REJECTED! WRONG PASSWORD!</b>'
+    
+    return render_template('display.html',
+                           title = title,
+                           output = output,
+                           table_1 = df.to_html())
+
 
 @app.route('/function', methods = ['GET', 'POST'])
 def functions():

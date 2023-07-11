@@ -2,3 +2,5 @@
 *.ipynb
 *.csv
 *.pyc
+passwords.env
+*.log
