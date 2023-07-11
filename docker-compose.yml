@@ -1,0 +1,15 @@
+version: '3.3'
+
+services:
+ server:
+  restart: always
+  build: ./server
+  ports:
+   - "3500:3500"
+  env_file:
+   - ./server/passwords.env
+  volumes:
+   - ./server/app:/app #use this line Linux Host
+   - /var/log/TAFI:/app/logs #use this line Linux Host to mount the logs
+   - /etc/localtime:/etc/localtime:ro #use this line Linux Host to use same time as the Host
+  entrypoint: python app.py
