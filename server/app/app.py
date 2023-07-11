@@ -175,7 +175,7 @@ def functions():
 if __name__ == "__main__":
     try:
         app.program_last_restart = str(datetime.datetime.now())[:-7]
-        app.run(host='0.0.0.0', port = 5500)
+        app.run(host='0.0.0.0', port = 3000)
     except Exception as e:
         app.logger.error('Could not start TAFI!')
         app.logger.error(str(traceback.format_exc()))
