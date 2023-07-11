@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.8
 
 ENV TZ=Europe/Sofia
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
