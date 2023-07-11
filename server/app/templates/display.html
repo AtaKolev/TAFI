@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="container">
+        <h1>Stock/Pair Visualization</h1>
+        <h4>Visualizing certain stock or pair for a chosen period</h4>
+    </br>
+
+    <form method="POST" action="/display">
+            <input type="text" name="mycheckbox" value='AAPL'> Ticker(Stock or Currency Pair) <small><i></i></small></br>
+            <input type="text" name="mycheckbox" value='1y'>period_back - how far back to look <small><i></i></small></br>
+            <input type="text" name="mycheckbox" value='1h'>interval - what interval to use(1m, 5m, 1h, 1d...1y) <small><i></i></small></br>
+            <input type="password" name="mycheckbox" value=''> *display password</br>      
+            <input type="submit" value="Check"></br> 
+    </form>
+    <hr></div>
+    <small>
+        {{output | safe}}
+    </small>
+    <small>
+        {{table_1 | safe}}
+    </small>
+
+
+    </br></br><hr></br>
+{% endblock %}
