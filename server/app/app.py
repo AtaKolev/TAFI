@@ -155,7 +155,7 @@ def functions():
         boxes = request.form.getlist('mycheckbox')
         function = str(boxes[0])
         password = str(boxes[1])
-        if password == app.password:
+        if password == app.function_password:
             if function == 'send test email':
                 send_test_email()
             elif function == 'add a stock to watchlist':
