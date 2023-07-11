@@ -21,3 +21,5 @@ default_close_shifted_tolerance = 0.005
 signal_from_bb = 'signal_from_bb'
 price_change = 'price_change'
 slope_cat_col = 'slope_cat'
+email_sender = 'automatedemailsAK@gmail.com'
+email_password = 'fxwoyrlngjytlwbx'

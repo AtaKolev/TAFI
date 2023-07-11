@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="container">
+        <h1>Logs</h1>
+        <h4>Server and Server Error Logs</h4>
+        <small>
+        - Here the developers can check the logs.</br>
+        </small>
+        </br>  
+
+    <form action="/logs" method="POST">
+            <select id="mycheckbox" name="mycheckbox">
+                <option>server.log</option>
+                <option>server_error.log</option>
+            </select> *log type - <small><i>which log to be displayed</small></i></br>
+            <input type="number" name="mycheckbox" value=100> row count <br/> 
+            <input name="mycheckbox"> phrase - <small><i></i>specific phrase to look for; leave blank for the whole log</small></br>
+            <input type="submit" value="Покажи"></br>  
+        </form>
+        <hr>
+        <b>Logs:</b>
+        {{text|safe}}
+    
+        </div>
+    
+        </br></br></br><hr></br>
+    
+{% endblock %}

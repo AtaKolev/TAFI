@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="container">
+        <h1>Function</h1>
+        <h4>Manually trigger a function</h4>
+        <small>
+        - A place from where developers can run functions.</br>
+        </small>
+        </br>  
+
+    <form action="/function" method="POST">
+            <select id="mycheckbox" name="mycheckbox">
+                <option>send test email</option>
+                <option>add a stock to watchlist</option>
+                <option>add a currency pair to watchlist</option>
+                <option>print stock watchlist</option>
+                <option>print cpair watchlist</option>
+            </select> *функция - <small><i>името на функцията, която ще бъде стартирана</small></i></br>
+            <input type="password" name="mycheckbox" value=''> *password - <small><i>парола на разработчика</small></i></br> 
+            <input type="sop" name="mycheckbox" value=''> *stock or pair - <small><i>парола на разработчика</small></i></br> 
+        <input type="submit" value="Изпълни"></br> 
+        </form>
+    {{ output | safe}}
+    <small>
+        {{tables_1 | safe}}
+    </small>
+    
+{% endblock %}
