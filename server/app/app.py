@@ -110,11 +110,15 @@ def send_test_email():
     try:
         send_email.send_email("TAFI: Test email", message = message, recipient='atanaskolevv01@gmail.com')
         log('send_test_email', "Executed successfully!", error = False)
-    except Exception as e:
+    except:
         log("send_test_email", "Send test email failed!", error = True)
 
 def add_ticker(ticker, list_to_add_to):
-    list_to_add_to.append(ticker)
+    try:
+        list_to_add_to.append(ticker)
+        log('add_ticker', f"{ticker} successfuly added to {list_to_add_to}", error = False)
+    except:
+        log("add_ticker", f"{ticker} was not added to {list_to_add_to}", error = True)
 
 def print_watchlist(list_type):
     return list_type
