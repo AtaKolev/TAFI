@@ -165,6 +165,7 @@ def display():
                 output = 'Success!'
             except Exception as e:
                 output = f"Failed because of\n {e}"
+                log('display', f"FAILED: {e}", error = True)
         else:
             output = f'<b style="color:red">REJECTED! WRONG PASSWORD!</b>'
     
