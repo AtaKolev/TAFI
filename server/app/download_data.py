@@ -71,6 +71,19 @@ def slope(ser, period):
 def train_and_pred_XGBR(df):
 
     X = df[const.f_cols]
+    y = df[const.label]
+    xgbr = XGBRegressor(**const.model_params)
+    X_train = X.iloc[:-1, :]
+    y_train = y.iloc[:-1, :]
+
+    xgbr.fit(X_train, y_train)
+    df[const.pred_col_name] = xgbr.predict(X)
+    df[const.predicted_diff_col] = df[const.close_col] - df[const.pred_col_name]
+    df[const.predicted_change_col] = np.where(df[const.predicted_diff_col] > 0, 1,
+                                              np.where(df[const.predicted_diff_col] < 0, -1, 0))
+    
+    return df
+    
 
 def main_pipe(ticker = const.default_ticker, period_back = const.default_period_back, interval = const.default_interval, 
               period_BB = const.default_period_BB, win_length_RSI = const.default_win_length_RSI, period_slope = const.default_period_slope,
@@ -91,6 +104,7 @@ def main_pipe(ticker = const.default_ticker, period_back = const.default_period_
     main_df[const.slope_cat_col] = np.where((main_df[const.slope] <= 30) & (main_df[const.slope] >= -30), 0,
                                             np.where(main_df[const.slope] > 30, 1, 
                                                      np.where(main_df[const.slope] < -30, -1, 2)))
+    main_df = train_and_pred_XGBR(main_df)
 
     main_df = main_df.dropna()
     return main_df
