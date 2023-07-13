@@ -7,7 +7,7 @@ services:
   ports:
    - "3000:3000"
   env_file:
-   - ./server/passwords.env
+   - ./server/app/passwords.env
   volumes:
    - ./server/app:/app #use this line Linux Host
    - /var/log/TAFI:/app/logs #use this line Linux Host to mount the logs
