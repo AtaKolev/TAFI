@@ -4,3 +4,5 @@
 *.pyc
 passwords.env
 *.log
+*.env
+server/passwords.env

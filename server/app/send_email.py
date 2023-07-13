@@ -2,13 +2,19 @@
 import smtplib
 import ssl
 import constants as const
+import os
 
 # Import the email modules we'll need
 from email.message import EmailMessage
 
+if os.path.exists('passwords.env'):
+    from dotenv import load_dotenv
+    load_dotenv('passwords.env')
+
 def send_email(subject, message, recipient, test = False, test_recipients = []):
-    sender_email = const.email_sender
-    email_password = const.email_password
+    
+    sender_email = os.environ['email_sender']
+    email_password = os.environ['email_password']
     # Create the plain-text and HTML version of your message
     text = f"""Hello,
 
