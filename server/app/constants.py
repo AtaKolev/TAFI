@@ -30,7 +30,7 @@ predicted_change_col = 'predicted_change'
 
 
 # LISTS
-f_cols = ['Open', 'High', 'Low', 'Volume', 'Dividends', 'Stock Splits', 'upper_bound', 'lower_bound', 'rolling_mean__20', 'slope']
+f_cols = ['Open', 'High', 'Low', 'Volume', 'Dividends', 'Stock Splits', 'upper_bound', 'lower_bound', 'rolling_mean_20', 'slope']
 
 
 

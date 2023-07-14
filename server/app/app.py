@@ -18,16 +18,18 @@ app.program_last_restart = 0
 app.email_recipients = ['atanaskolevv01@gmail.com']
 app.function_password = 'imbigtrash1'
 app.display_password = 'nekradikebiem2'
-app.american_stock_watchlist = []
-app.asian_stock_watchlist = []
-app.european_stock_watchlist = []
-app.cpair_watchlist = []
+app.american_stock_watchlist = ['AAPL', 'BROS', 'PYPL', 'TSM']
+app.asian_stock_watchlist = ['SE', 'SONY']
+app.european_stock_watchlist = ['ABI', 'ROG', 'DSM', 'KNEBV']
+app.cpair_watchlist = ['EURUSD=X', 'USDJPY=X', 'GBPUSD=X', 'USDCAD=X']
 app.american_stock_open_time_hour = 16
 app.american_stock_open_time_minutes = 0
 app.asian_stock_open_time_hour = 3
 app.asian_stock_open_time_minutes = 0
 app.european_stock_open_time_hour = 10
 app.european_stock_open_time_minutes = 0
+app.currency_trading_hour = 0
+app.currency_trading_minutes = 0
 
 
 
@@ -129,8 +131,11 @@ def send_test_email():
 
 def add_ticker(ticker, list_to_add_to):
     try:
-        list_to_add_to.append(ticker)
-        log('add_ticker', f"{ticker} successfuly added to {list_to_add_to}", error = False)
+        if ticker not in list_to_add_to:
+            list_to_add_to.append(ticker)
+            log('add_ticker', f"{ticker} successfuly added to {list_to_add_to}", error = False)
+        else:
+            log('add_ticker', f"{ticker} already in {list_to_add_to}", error = False)
     except:
         log("add_ticker", f"{ticker} was not added to {list_to_add_to}", error = True)
 
@@ -139,7 +144,7 @@ def print_watchlist(list_type):
 
 
 ################################################################################################################
-# MANUAL FUNCTIONS
+# TIMED FUNCTIONS
 ################################################################################################################
 
 
@@ -158,6 +163,9 @@ def timed_stock_prediction():
         elif hour == app.european_stock_open_time_hour:
             stocklist = app.european_stock_watchlist
             market = 'European'
+        elif hour == app.currency_trading_hour:
+            stocklist = app.cpair_watchlist
+            market = 'FOREX'
         else:        
             stocklist = []
             market = ''
@@ -287,6 +295,7 @@ app.scheduler = BackgroundScheduler()
 app.scheduler.add_job(timed_stock_prediction, trigger = "cron", hour = app.american_stock_open_time_hour, minute = app.american_stock_open_time_minutes, end_date = '2200-01-01')
 app.scheduler.add_job(timed_stock_prediction, trigger = "cron", hour = app.asian_stock_open_time_hour, minute = app.asian_stock_open_time_minutes, end_date = '2200-01-01')
 app.scheduler.add_job(timed_stock_prediction, trigger = "cron", hour = app.european_stock_open_time_hour, minute = app.european_stock_open_time_minutes, end_date = '2200-01-01')
+app.scheduler.add_job(timed_stock_prediction, trigger = "cron", hour = app.european_stock_open_time_hour, minute = app.currency_trading_hour, end_date = '2200-01-01')
 app.scheduler.start()
 atexit.register(lambda: app.scheduler.shutdown())
 

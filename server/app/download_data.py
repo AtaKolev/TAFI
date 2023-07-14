@@ -74,7 +74,7 @@ def train_and_pred_XGBR(df):
     y = df[const.label]
     xgbr = XGBRegressor(**const.model_params)
     X_train = X.iloc[:-1, :]
-    y_train = y.iloc[:-1, :]
+    y_train = y.iloc[:-1]
 
     xgbr.fit(X_train, y_train)
     df[const.pred_col_name] = xgbr.predict(X)
