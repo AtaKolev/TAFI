@@ -144,7 +144,7 @@ def print_watchlist(list_type):
 
 
 def timed_stock_prediction():
-    if datetime.datetime.today().weekday() not in [6,7]:
+    if datetime.datetime.today().weekday() in [6,7]:
         log('timed_stock_prediction', 'Not in working days', error = False)
     else:
         hour = datetime.datetime.now().hour
