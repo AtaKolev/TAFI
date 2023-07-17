@@ -16,7 +16,7 @@ import random
 app = Flask(__name__)
 
 app.program_last_restart = 0
-app.email_recipients = ['atanaskolevv01@gmail.com']
+app.email_recipients = ['atanaskolevv01@gmail.com', 'naradopriesta@gmail.com']
 app.dev_emails = ['atanaskolevv01@gmail.com']
 app.function_password = 'imbigtrash1'
 app.display_password = 'nekradikebiem2'
