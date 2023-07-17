@@ -127,7 +127,8 @@ def send_test_email():
     
     message = "This is just a test"
     try:
-        send_email.send_email("TAFI: Test email", message = message, recipient='atanaskolevv01@gmail.com')
+        for recipient in app.email_recipients:
+            send_email.send_email("TAFI: Test email", message = message, recipient=recipient)
         log('send_test_email', "Executed successfully!", error = False)
     except:
         log("send_test_email", "Send test email failed!", error = True)
