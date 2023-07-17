@@ -8,6 +8,7 @@ import send_email
 import download_data as dd
 import pandas as pd
 import constants as const
+import random
 
 ################################################################################################################
 # APP VARIABLES
@@ -15,7 +16,8 @@ import constants as const
 app = Flask(__name__)
 
 app.program_last_restart = 0
-app.email_recipients = ['atanaskolevv01@gmail.com']
+app.email_recipients = ['atanaskolevv01@gmail.com', 'naradopriesta@gmail.com']
+app.dev_emails = ['atanaskolevv01@gmail.com']
 app.function_password = 'imbigtrash1'
 app.display_password = 'nekradikebiem2'
 app.american_stock_watchlist = ['AAPL', 'BROS', 'PYPL', 'TSM']
@@ -30,6 +32,7 @@ app.european_stock_open_time_hour = 10
 app.european_stock_open_time_minutes = 0
 app.currency_trading_hour = 0
 app.currency_trading_minutes = 0
+app.devmode = True
 
 
 
@@ -124,7 +127,8 @@ def send_test_email():
     
     message = "This is just a test"
     try:
-        send_email.send_email("TAFI: Test email", message = message, recipient='atanaskolevv01@gmail.com')
+        for recipient in app.email_recipients:
+            send_email.send_email("TAFI: Test email", message = message, recipient=recipient)
         log('send_test_email', "Executed successfully!", error = False)
     except:
         log("send_test_email", "Send test email failed!", error = True)
@@ -142,30 +146,46 @@ def add_ticker(ticker, list_to_add_to):
 def print_watchlist(list_type):
     return list_type
 
-
+def test_timed_function():
+    try:
+        if timed_stock_prediction(True):
+            return 'Success!'
+        else:
+            return "FAIL!"
+    except Exception as e:
+        return e
 ################################################################################################################
 # TIMED FUNCTIONS
 ################################################################################################################
 
 
-def timed_stock_prediction():
+def timed_stock_prediction(test = False):
     if datetime.datetime.today().weekday() in [6,7]:
         log('timed_stock_prediction', 'Not in working days', error = False)
+        return 0
     else:
         hour = datetime.datetime.now().hour
         market = ''
         if hour == app.american_stock_open_time_hour:
             stocklist = app.american_stock_watchlist
             market = 'American'
+            recipients = app.email_recipients
         elif hour == app.asian_stock_open_time_hour:
             stocklist = app.asian_stock_watchlist
             market = 'Asian'
+            recipients = app.email_recipients
         elif hour == app.european_stock_open_time_hour:
             stocklist = app.european_stock_watchlist
             market = 'European'
+            recipients = app.email_recipients
         elif hour == app.currency_trading_hour:
             stocklist = app.cpair_watchlist
             market = 'FOREX'
+            recipients = app.email_recipients
+        elif test:
+            stocklist = random.choice([app.american_stock_watchlist, app.asian_stock_watchlist, app.european_stock_open_time_hour, app.cpair_watchlist])
+            market = 'TEST'
+            recipients = app.dev_emails
         else:        
             stocklist = []
             market = ''
@@ -177,24 +197,31 @@ def timed_stock_prediction():
         for stock in stocklist:
             try:
                 df = dd.main_pipe(ticker = stock)
-                if df.loc[-1, const.predicted_change_col] == 1:
-                    message += f"{market}: {stock} is probably going to go UP today by [{df.loc[-1, const.predicted_diff_col]}]!"
+                if len(df) == 0:
+                    return 0
+                result = df.tail(1)[const.predicted_change_col].values[0]
+                diff = df.tail(1)[const.predicted_diff_col].values[0]
+                if result == 1:
+                    message += f"{market}: {stock} is probably going to go UP today by [{diff}]!\n"
                     log('timed_stock_prediction', f"found a ticker that will go UP!", error = False)
-                elif df.loc[-1, const.predicted_change_col] == -1:
-                    message += f"{market}: {stock} is probably going to go DOWN today by [{df.loc[-1, const.predicted_diff_col]}]!"
+                elif result == -1:
+                    message += f"{market}: {stock} is probably going to go DOWN today by [{diff}]!\n"
                     log('timed_stock_prediction', f"found a ticker that will go DOWN!", error = False)
                 else:
                     log('timed_stock_prediction', f"didn't find anything!", error = False)
             except:
                 log('timed_stock_prediction', f"encountered an error!", error = True)
-        for recipient in app.email_recipients:
+                continue
+        for recipient in recipients:
             try:
                 send_email.send_email(subject = f"TAFI: Daily {market} Stock Prediction",
                                       message=message,
                                       recipient = recipient)
-                log('timed_stock_prediction', 'successfully sent an email', error = True)
+                log('timed_stock_prediction', 'successfully sent an email', error = False)
+                return 1
             except:
                 log('timed_stock_prediction', 'could not send an email', error = True)
+                return 0
 
 ################################################################################################################
 # PAGES
@@ -282,6 +309,8 @@ def functions():
                 output = print_watchlist(app.european_stock_watchlist)
             elif function == 'print cpair watchlist':
                 output = print_watchlist(app.cpair_watchlist)
+            elif function == 'test timed function':
+                output = test_timed_function()
         else:
             output = f'<b style="color:red">REJECTED! WRONG PASSWORD!</b>'
     return render_template('function.html', title=title, output=output)
