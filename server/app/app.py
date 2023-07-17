@@ -130,20 +130,25 @@ def send_test_email():
         for recipient in app.email_recipients:
             send_email.send_email("TAFI: Test email", message = message, recipient=recipient)
         log('send_test_email', "Executed successfully!", error = False)
+        return 'Success!'
     except:
         log("send_test_email", "Send test email failed!", error = True)
+        return 'FAIL!'
 
-def add_ticker(ticker, list_to_add_to):
+def add_element_to_list(element, list_to_add_to):
     try:
-        if ticker not in list_to_add_to:
-            list_to_add_to.append(ticker)
-            log('add_ticker', f"{ticker} successfuly added to {list_to_add_to}", error = False)
+        if element not in list_to_add_to:
+            list_to_add_to.append(element)
+            log('add_element_to_list', f"{element} successfuly added to {list_to_add_to}", error = False)
+            return 'Success'
         else:
-            log('add_ticker', f"{ticker} already in {list_to_add_to}", error = False)
+            log('add_element_to_list', f"{element} already in {list_to_add_to}", error = False)
+            return 'Element already in list'
     except:
-        log("add_ticker", f"{ticker} was not added to {list_to_add_to}", error = True)
+        log("add_element_to_list", f"{element} was not added to {list_to_add_to}", error = True)
+        return 'FAILED!'
 
-def print_watchlist(list_type):
+def print_list(list_type):
     return list_type
 
 def test_timed_function():
@@ -284,33 +289,38 @@ def functions():
         password = str(boxes[1])
         if password == app.function_password:
             if function == 'send test email':
-                send_test_email()
+                output = send_test_email()
             elif function == 'add a stock to american watchlist':
                 ticker = str(boxes[2])
-                add_ticker(ticker, app.american_stock_watchlist)
+                add_element_to_list(ticker, app.american_stock_watchlist)
                 output = f"{ticker} successfully added to American Stock Watchlist!"
             elif function == 'add a stock to asian watchlist':
                 ticker = str(boxes[2])
-                add_ticker(ticker, app.asian_stock_watchlist)
+                add_element_to_list(ticker, app.asian_stock_watchlist)
                 output = f"{ticker} successfully added to Asian Stock Watchlist!"
             elif function == 'add a stock to european watchlist':
                 ticker = str(boxes[2])
                 output = f"{ticker} successfully added to European Stock Watchlist!"
-                add_ticker(ticker, app.european_stock_watchlist)
+                add_element_to_list(ticker, app.european_stock_watchlist)
             elif function == 'add a currency pair to watchlist':
                 ticker = str(boxes[2])
-                add_ticker(ticker, app.cpair_watchlist)
+                add_element_to_list(ticker, app.cpair_watchlist)
                 output = f"{ticker} successfully added to CPair Watchlist!"
             elif function == 'print american stock watchlist':
-                output = print_watchlist(app.american_stock_watchlist)
+                output = print_list(app.american_stock_watchlist)
             elif function == 'print asian stock watchlist':
-                output = print_watchlist(app.asian_stock_watchlist)
+                output = print_list(app.asian_stock_watchlist)
             elif function == 'print european stock watchlist':
-                output = print_watchlist(app.european_stock_watchlist)
+                output = print_list(app.european_stock_watchlist)
             elif function == 'print cpair watchlist':
-                output = print_watchlist(app.cpair_watchlist)
+                output = print_list(app.cpair_watchlist)
             elif function == 'test timed function':
                 output = test_timed_function()
+            elif function == 'add email to list':
+                email = str(boxes[2])
+                output = add_element_to_list(email, app.email_recipients)
+            elif function == 'print email list':
+                output = print_list(app.email_recipients)
         else:
             output = f'<b style="color:red">REJECTED! WRONG PASSWORD!</b>'
     return render_template('function.html', title=title, output=output)

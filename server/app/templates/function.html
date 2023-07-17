@@ -21,9 +21,11 @@
                 <option>print european stock watchlist</option>
                 <option>print cpair watchlist</option>
                 <option>test timed function</option>
-            </select> *функция - <small><i>името на функцията, която ще бъде стартирана</small></i></br>
-            <input type="password" name="mycheckbox" value=''> *password - <small><i>парола на разработчика</small></i></br> 
-            <input type="sop" name="mycheckbox" value=''> *stock or pair - <small><i>парола на разработчика</small></i></br> 
+                <option>add email to list</option>
+                <option>print email list</option>
+            </select> *function - <small><i>Function to be executed</small></i></br>
+            <input type="password" name="mycheckbox" value=''> *password - <small><i>Developer password</small></i></br> 
+            <input type="sop" name="mycheckbox" value=''> *stock or pair - <small><i>Element</small></i></br> 
         <input type="submit" value="Изпълни"></br> 
         </form>
     {{ output | safe}}
