@@ -28,9 +28,9 @@ NOTE: Do not reply or write to me! I'm a bot and your message will be lost to th
 """
     msg = MIMEText(text, 'plain')
     msg['Subject'] = subject
-    port = 993
+    port = 587
 
-    with smtplib.SMTP(host = 'outlook.office365.com', port = port) as server:
+    with smtplib.SMTP(host = 'smtp-mail.outlook.com', port = port) as server:
         server.starttls()
         server.login(sender_email, email_password)
         server.sendmail(sender_email, recipient, msg.as_string())
