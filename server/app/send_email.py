@@ -6,6 +6,7 @@ import os
 
 # Import the email modules we'll need
 from email.message import EmailMessage
+from email.mime.text import MIMEText
 
 if os.path.exists('passwords.env'):
     from dotenv import load_dotenv
@@ -25,18 +26,14 @@ Atanas Kolev's automated message bot
 
 NOTE: Do not reply or write to me! I'm a bot and your message will be lost to the void. 
 """
-    
-    em = EmailMessage()
-    em['From'] = sender_email
-    em['To'] = recipient
-    em['Subject'] = subject
-    em.set_content(text)
+    msg = MIMEText(text, 'plain')
+    msg['Subject'] = subject
+    port = 587
 
-    context = ssl.create_default_context()
-
-    with smtplib.SMTP_SSL(host = 'smtp.gmail.com', port = 465, context = context) as smtp:
-        smtp.login(user = sender_email, password = email_password)
-        smtp.sendmail(sender_email, recipient, em.as_string())
+    with smtplib.SMTP(host = 'smtp-mail.outlook.com', port = port) as server:
+        server.starttls()
+        server.login(sender_email, email_password)
+        server.sendmail(sender_email, recipient, msg.as_string())
 
 if __name__ == "__main__":
     pass
