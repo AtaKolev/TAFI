@@ -6,6 +6,8 @@ services:
   build: ./server
   ports:
    - "3000:3000"
+   - "587:587"
+   - "25:25"
   env_file:
    - ./server/app/passwords.env
   volumes:
