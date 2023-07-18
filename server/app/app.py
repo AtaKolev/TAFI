@@ -217,16 +217,16 @@ def timed_stock_prediction(test = False):
             except:
                 log('timed_stock_prediction', f"encountered an error!", error = True)
                 continue
-        
-        try:
-            send_email.send_email(subject = f"TAFI: Daily {market} Stock Prediction",
-                                    message=message,
-                                    recipient = app.email_recipients)
-            log('timed_stock_prediction', 'successfully sent an email', error = False)
-            return 1
-        except:
-            log('timed_stock_prediction', 'could not send an email', error = True)
-            return 0
+        for recipient in recipients:
+            try:
+                send_email.send_email(subject = f"TAFI: Daily {market} Stock Prediction",
+                                      message=message,
+                                      recipient = recipient)
+                log('timed_stock_prediction', 'successfully sent an email', error = False)
+                return 1
+            except:
+                log('timed_stock_prediction', 'could not send an email', error = True)
+                return 0
 
 ################################################################################################################
 # PAGES
