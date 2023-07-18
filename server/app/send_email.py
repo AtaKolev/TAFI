@@ -27,7 +27,7 @@ NOTE: Do not reply or write to me! I'm a bot and your message will be lost to th
     headers = subject
     email_message = headers + "\r\n" + body
 
-    smtp_server = SMTP_SSL(SMTP_HOST, port = SMTP_SSL_PORT)
+    smtp_server = SMTP_SSL(SMTP_HOST, port = SMTP_SSL_PORT, keyfile=)
     smtp_server.set_debuglevel(1)
     smtp_server.login(sender_email, email_password)
     smtp_server.sendmail(from_email, to_emails, email_message)

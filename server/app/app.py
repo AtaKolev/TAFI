@@ -127,8 +127,7 @@ def send_test_email():
     
     message = "This is just a test"
     try:
-        for recipient in app.email_recipients:
-            send_email.send_email("TAFI: Test email", message = message, recipient=recipient)
+        send_email.send_email("TAFI: Test email", message = message, recipients=app.email_recipients)
         log('send_test_email', "Executed successfully!", error = False)
         return 'Success!'
     except:
@@ -221,7 +220,7 @@ def timed_stock_prediction(test = False):
         try:
             send_email.send_email(subject = f"TAFI: Daily {market} Stock Prediction",
                                     message=message,
-                                    recipient = app.email_recipients)
+                                    recipients = app.email_recipients)
             log('timed_stock_prediction', 'successfully sent an email', error = False)
             return 1
         except:
