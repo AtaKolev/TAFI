@@ -12,8 +12,7 @@ RUN        apt-get update && apt-get install -y libaio1 wget unzip \
             && cd /opt/oracle/instantclient* \
             && rm -f *jdbc* *occi* *mysql* *README *jar uidrvci genezi adrci \
             && echo /opt/oracle/instantclient* > /etc/ld.so.conf.d/oracle-instantclient.conf \
-            && ldconfig \
-            && openssl req -x509 -sha256 -nodes -newkey rsa:4096 -keyout mailcert.key -days 730 -out mailcert.pem
+            && ldconfig 
 
 WORKDIR    /app
 
