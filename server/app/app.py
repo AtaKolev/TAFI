@@ -31,7 +31,7 @@ app.asian_stock_open_time_hour = 3
 app.asian_stock_open_time_minutes = 0
 app.european_stock_open_time_hour = 10
 app.european_stock_open_time_minutes = 0
-app.currency_trading_hour = 0
+app.currency_trading_hour = 1
 app.currency_trading_minutes = 0
 app.devmode = True
 
