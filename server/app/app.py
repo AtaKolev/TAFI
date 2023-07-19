@@ -9,6 +9,7 @@ import download_data as dd
 import pandas as pd
 import constants as const
 import random
+import numpy as np
 
 ################################################################################################################
 # APP VARIABLES
@@ -16,7 +17,7 @@ import random
 app = Flask(__name__)
 
 app.program_last_restart = 0
-app.email_recipients = ['atanaskolevv01@gmail.com']#, 'naradopriesta@gmail.com']
+app.email_recipients = ['atanaskolevv01@gmail.com', 'naradopriesta@gmail.com']
 app.dev_emails = ['atanaskolevv01@gmail.com']
 app.function_password = 'imbigtrash1'
 app.display_password = 'nekradikebiem2'
@@ -206,11 +207,17 @@ def timed_stock_prediction(test = False):
                     return 0
                 result = df.tail(1)[const.predicted_change_col].values[0]
                 diff = df.tail(1)[const.predicted_diff_col].values[0]
+                df[const.price_change_up] = np.where(df[const.close_col] > df[const.close_shifted_col], 1, 0)
+                df[const.price_change_down] = np.where(df[const.close_col] < df[const.close_shifted_col], 1, 0)
+                accuracy_going_up = df[df[const.predicted_change_col] == 1][const.price_change_up].mean()
+                accuracy_going_down = df[df[const.predicted_change_col] == 1][const.price_change_down].mean()
                 if result == 1:
                     message += f"{market}: {stock} is probably going to go UP today by [{diff}]!\n"
+                    message += f"Accuracy for going up is: [{accuracy_going_up * 100}%]\n"
                     log('timed_stock_prediction', f"found a ticker that will go UP!", error = False)
                 elif result == -1:
                     message += f"{market}: {stock} is probably going to go DOWN today by [{diff}]!\n"
+                    message += f"Accuracy for going down is: [{accuracy_going_down * 100}%]\n"
                     log('timed_stock_prediction', f"found a ticker that will go DOWN!", error = False)
                 else:
                     log('timed_stock_prediction', f"didn't find anything!", error = False)
