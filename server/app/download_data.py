@@ -70,14 +70,13 @@ def slope(ser, period):
 
 def train_and_pred_XGBR(df):
 
-    X = df[const.f_cols]
-    y = df[const.label]
+    df_to_train = df.iloc[:-1, :].sample(frac = 1)
+    X = df_to_train[const.f_cols]
+    y = df_to_train[const.label]
     xgbr = XGBRegressor(**const.model_params)
-    X_train = X.iloc[:-1, :]
-    y_train = y.iloc[:-1]
 
-    xgbr.fit(X_train, y_train)
-    df[const.pred_col_name] = xgbr.predict(X)
+    xgbr.fit(X, y)
+    df[const.pred_col_name] = xgbr.predict(df[const.f_cols])
     df[const.predicted_diff_col] = df[const.close_col] - df[const.pred_col_name]
     df[const.predicted_change_col] = np.where(df[const.predicted_diff_col] > 0, 1,
                                               np.where(df[const.predicted_diff_col] < 0, -1, 0))

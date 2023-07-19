@@ -3,6 +3,7 @@ import smtplib
 import ssl
 import constants as const
 import os
+import datetime
 
 # Import the email modules we'll need
 from email.message import EmailMessage
@@ -18,6 +19,7 @@ def send_email(subject, message, recipient, test = False, test_recipients = []):
     email_password = os.environ['email_password']
     # Create the plain-text and HTML version of your message
     text = f"""Hello,
+Daily prognosis for {datetime.datetime.now().day}/{datetime.datetime.now().month}/{datetime.datetime.now().year}
 
 {message}
 
