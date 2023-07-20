@@ -222,6 +222,7 @@ def timed_stock_prediction(test = False):
                 else:
                     log('timed_stock_prediction', f"didn't find anything!", error = False)
             except:
+                message += f"{market}: Couldn't get a prediction for {stock}!"
                 log('timed_stock_prediction', f"encountered an error!", error = True)
                 continue
         for recipient in recipients:
