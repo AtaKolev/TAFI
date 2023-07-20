@@ -354,7 +354,7 @@ def functions():
                 output = remove_list_element(ticker, app.cpair_watchlist)
             elif function == 'remove email from recipients':
                 email = str(boxes[2])
-                output = remove_list_element(ticker, app.email_recipients)
+                output = remove_list_element(email, app.email_recipients)
         else:
             output = f'<b style="color:red">REJECTED! WRONG PASSWORD!</b>'
     return render_template('function.html', title=title, output=output)
