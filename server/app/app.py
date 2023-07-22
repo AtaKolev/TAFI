@@ -177,7 +177,7 @@ def remove_list_element(element, list):
 
 
 def timed_stock_prediction(test = False):
-    if datetime.datetime.today().weekday() in [6,7]:
+    if datetime.datetime.today().weekday() in [5,6]:
         log('timed_stock_prediction', 'Not in working days', error = False)
         return 0
     else:
