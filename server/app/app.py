@@ -160,13 +160,24 @@ def test_timed_function():
             return "FAIL!"
     except Exception as e:
         return e
+    
+def remove_list_element(element, list):
+    try:
+        if element in list:
+            list.remove(element)
+            return f"Success! {element} has been removed!"
+        else:
+            return f"{element} not in list!"
+    except Exception as e:
+        return e
+
 ################################################################################################################
 # TIMED FUNCTIONS
 ################################################################################################################
 
 
 def timed_stock_prediction(test = False):
-    if datetime.datetime.today().weekday() in [6,7]:
+    if datetime.datetime.today().weekday() in [5,6]:
         log('timed_stock_prediction', 'Not in working days', error = False)
         return 0
     else:
@@ -222,6 +233,7 @@ def timed_stock_prediction(test = False):
                 else:
                     log('timed_stock_prediction', f"didn't find anything!", error = False)
             except:
+                message += f"{market}: Couldn't get a prediction for {stock}!"
                 log('timed_stock_prediction', f"encountered an error!", error = True)
                 continue
         for recipient in recipients:
@@ -328,6 +340,21 @@ def functions():
                 output = add_element_to_list(email, app.email_recipients)
             elif function == 'print email list':
                 output = print_list(app.email_recipients)
+            elif function == 'remove stock from american stocks':
+                ticker = str(boxes[2])
+                output = remove_list_element(ticker, app.american_stock_watchlist)
+            elif function == 'remove stock from european stocks':
+                ticker = str(boxes[2])
+                output = remove_list_element(ticker, app.european_stock_watchlist)
+            elif function == 'remove stock from asian stocks':
+                ticker = str(boxes[2])
+                output = remove_list_element(ticker, app.asian_stock_watchlist)
+            elif function == 'remove currency pair from currency pairs':
+                ticker = str(boxes[2])
+                output = remove_list_element(ticker, app.cpair_watchlist)
+            elif function == 'remove email from recipients':
+                email = str(boxes[2])
+                output = remove_list_element(email, app.email_recipients)
         else:
             output = f'<b style="color:red">REJECTED! WRONG PASSWORD!</b>'
     return render_template('function.html', title=title, output=output)
@@ -341,7 +368,7 @@ app.scheduler = BackgroundScheduler()
 app.scheduler.add_job(timed_stock_prediction, trigger = "cron", hour = app.american_stock_open_time_hour, minute = app.american_stock_open_time_minutes, end_date = '2200-01-01')
 app.scheduler.add_job(timed_stock_prediction, trigger = "cron", hour = app.asian_stock_open_time_hour, minute = app.asian_stock_open_time_minutes, end_date = '2200-01-01')
 app.scheduler.add_job(timed_stock_prediction, trigger = "cron", hour = app.european_stock_open_time_hour, minute = app.european_stock_open_time_minutes, end_date = '2200-01-01')
-app.scheduler.add_job(timed_stock_prediction, trigger = "cron", hour = app.european_stock_open_time_hour, minute = app.currency_trading_hour, end_date = '2200-01-01')
+app.scheduler.add_job(timed_stock_prediction, trigger = "cron", hour = app.currency_trading_hour, minute = app.currency_trading_minutes, end_date = '2200-01-01')
 app.scheduler.start()
 atexit.register(lambda: app.scheduler.shutdown())
 

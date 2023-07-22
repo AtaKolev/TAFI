@@ -23,9 +23,14 @@
                 <option>test timed function</option>
                 <option>add email to list</option>
                 <option>print email list</option>
+                <option>remove stock from american stocks</option>
+                <option>remove stock from european stocks</option>
+                <option>remove stock from asian stocks</option>
+                <option>remove currency pair from currency pairs</option>
+                <option>remove email from recipients</option>
             </select> *function - <small><i>Function to be executed</small></i></br>
             <input type="password" name="mycheckbox" value=''> *password - <small><i>Developer password</small></i></br> 
-            <input type="sop" name="mycheckbox" value=''> *stock or pair - <small><i>Element</small></i></br> 
+            <input type="sop" name="mycheckbox" value=''> *List element - <small><i>stock/cpair/email</small></i></br> 
         <input type="submit" value="Изпълни"></br> 
         </form>
     {{ output | safe}}
