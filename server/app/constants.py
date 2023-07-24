@@ -27,7 +27,7 @@ label = 'Close_Shifted'
 pred_col_name = 'predictions'
 predicted_diff_col = 'predicted_diff'
 predicted_change_col = 'predicted_change'
-
+sideways_limit = 0.05
 
 # LISTS
 f_cols = ['Open', 'High', 'Low', 'Volume', 'Dividends', 'Stock Splits', 'upper_bound', 'lower_bound', 'rolling_mean_20', 'slope']

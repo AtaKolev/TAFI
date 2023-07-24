@@ -120,6 +120,31 @@ def get_logs(length=30, search_phrase=None, logfile=None):
 
 
 ################################################################################################################
+# HELPER FUNCTIONS
+################################################################################################################
+
+def prediction_sideways_check(df, sideways_limit = const.sideways_limit):
+
+    positive_condition = (df.iloc[-1][const.predicted_diff_col] > (df.iloc[-1][const.close_col] * sideways_limit))
+    negative_condition = (df.iloc[-1][const.predicted_diff_col] < (df.iloc[-1][const.close_col] * sideways_limit))
+
+    if positive_condition or negative_condition:
+        return "Market will probably be sideways!"
+    else:
+        return "Market will probably NOT be sideways!"
+
+def sideways_check(df, sideways_limit = const.sideways_limit):
+
+    negative_condition = np.all((df.iloc[-3:][const.close_col] - df.iloc[-3:][const.close_shifted_col]) < sideways_limit)
+    positive_condition = np.all((df.iloc[-3:][const.close_col] - df.iloc[-3:][const.close_shifted_col]) > sideways_limit)
+
+    if negative_condition or positive_condition:
+        return "Market is sideways last 3 days!"
+    else:
+        return "Market is NOT sideways last 3 days!"
+
+
+################################################################################################################
 # MANUAL FUNCTIONS
 ################################################################################################################
 
@@ -216,8 +241,8 @@ def timed_stock_prediction(test = False):
                 df = dd.main_pipe(ticker = stock)
                 if len(df) == 0:
                     return 0
-                result = df.tail(1)[const.predicted_change_col].values[0]
-                diff = df.tail(1)[const.predicted_diff_col].values[0]
+                result = df.iloc[-1][const.predicted_change_col]
+                diff = df.iloc[-1][const.predicted_diff_col]
                 df[const.price_change_up] = np.where(df[const.close_col] > df[const.close_shifted_col], 1, 0)
                 df[const.price_change_down] = np.where(df[const.close_col] < df[const.close_shifted_col], 1, 0)
                 accuracy_going_up = df[df[const.predicted_change_col] == 1][const.price_change_up].mean()
@@ -232,6 +257,8 @@ def timed_stock_prediction(test = False):
                     log('timed_stock_prediction', f"found a ticker that will go DOWN!", error = False)
                 else:
                     log('timed_stock_prediction', f"didn't find anything!", error = False)
+                message += f"PREDICTED: {prediction_sideways_check(df)}\n"
+                message += f"CHECK FROM REAL VALUES: {prediction_sideways_check(df)}\n"
             except:
                 message += f"{market}: Couldn't get a prediction for {stock}!"
                 log('timed_stock_prediction', f"encountered an error!", error = True)
