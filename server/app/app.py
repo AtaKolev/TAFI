@@ -258,7 +258,7 @@ def timed_stock_prediction(test = False):
                 else:
                     log('timed_stock_prediction', f"didn't find anything!", error = False)
                 message += f"PREDICTED: {prediction_sideways_check(df)}\n"
-                message += f"CHECK FROM REAL VALUES: {prediction_sideways_check(df)}\n"
+                message += f"CHECK FROM REAL VALUES: {sideways_check(df)}\n"
             except:
                 message += f"{market}: Couldn't get a prediction for {stock}!"
                 log('timed_stock_prediction', f"encountered an error!", error = True)
