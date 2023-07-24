@@ -135,8 +135,8 @@ def prediction_sideways_check(df, sideways_limit = const.sideways_limit):
 
 def sideways_check(df, sideways_limit = const.sideways_limit):
 
-    negative_condition = np.all((df.iloc[-3:][const.close_col] - df.iloc[-3:][const.close_shifted_col]) < sideways_limit)
-    positive_condition = np.all((df.iloc[-3:][const.close_col] - df.iloc[-3:][const.close_shifted_col]) > sideways_limit)
+    negative_condition = np.all((df.iloc[-4:-1][const.close_col] - df.iloc[-4:-1][const.close_shifted_col]) < sideways_limit)
+    positive_condition = np.all((df.iloc[-4:-1][const.close_col] - df.iloc[-4:-1][const.close_shifted_col]) > sideways_limit)
 
     if negative_condition or positive_condition:
         return "Market is sideways last 3 days!"
