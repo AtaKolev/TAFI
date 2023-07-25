@@ -1,5 +1,5 @@
 pandas==1.4.2
-numpy==1.21.5
+numpy==1.24.3
 flask==2.0.3
 python_dotenv==0.14.0
 apscheduler==3.7.0
@@ -7,3 +7,4 @@ statsmodels==0.13.2
 yfinance==0.2.22
 xgboost==1.7.5
 scikit-learn==1.0.2
+tensorflow==2.13.0
