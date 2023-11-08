@@ -43,7 +43,7 @@ app.devmode = True
 # Logs:
 ################################################################################################################
 def init_logger():
-    logger = logging.getLogger('ADV')
+    logger = logging.getLogger('TAFI')
     if logger.hasHandlers():
         logger.handlers.clear()
     logger.setLevel(level=logging.DEBUG)
@@ -59,7 +59,7 @@ app.logger = init_logger()
 
 # ERROR LOG:
 def init_error_logger():
-    logger = logging.getLogger('ADV ERRORS')
+    logger = logging.getLogger('TAFI ERRORS')
     if logger.hasHandlers():
         logger.handlers.clear()
     logger.setLevel(level=logging.DEBUG)
@@ -82,7 +82,7 @@ def log(func_name, message, error=False):
         app.error_logger.error('================')
         app.error_logger.error(str(traceback.format_exc()))
         app.error_logger.error('================')
-        subject = f"CVPN: {func_name} encountered and error"
+        subject = f"TAFI: {func_name} encountered an error"
         if app.devmode==True:
             subject += ' - DEVMODE IS ON!'
             send_email(subject, message=str(traceback.format_exc()), recipients=app.dev_emails)
