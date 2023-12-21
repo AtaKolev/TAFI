@@ -4,6 +4,9 @@ import yfinance as yf
 import statsmodels.api as sm
 import yaml
 from xgboost import XGBRegressor
+from helper import HelperFunctions as hf
+from neural_networks import AR_NN as ar
+from sklearn.metrics import mean_absolute_error
 
 with open('constants.yaml', 'r') as file:
     const = yaml.safe_load(file)
@@ -86,7 +89,31 @@ def train_and_pred_XGBR(df):
                                               np.where(df[const['predicted_diff_col']] < 0, -1, 0))
     
     return df
-    
+
+def train_and_pred_AR(df):
+    df_copy = df.copy()
+    series_to_ar = const['series_to_ar']
+    model_params = const['AR_model_params']
+    loss = model_params['loss']
+    optimizer = model_params['optimizer']
+    activation_function = model_params['activation_function']
+    lag = model_params['lag']
+    test_size = model_params['test_size']
+    epochs = model_params['epochs']
+    series_to_predict = {}
+
+
+    for series_name in series_to_ar:
+        series_to_predict.update({series_name : df_copy[series_name]})
+        X_train, X_test, y_train, y_test = hf.train_test_split_AR(df_copy[series_name], lag = lag, test_size = test_size)
+        model = ar(activation_function=activation_function, loss = loss, optimizer = optimizer)
+        model.fit(X_train, y_train, epochs = epochs)
+        prediction = model.predict(X_test)
+        mae = mean_absolute_error(y_test, prediction)
+        print(f"Model for {series_name} has {mae:.2f} absolute error!")
+        print(f"Last value of {series_name}: {df_copy.reset_index().loc[len(df_copy)-1, series_name]}. \n Predicted next value of {series_name}: {prediction[-1]}!")
+
+    return df_copy 
 
 def main_pipe(ticker = const['default_ticker'], period_back = const['default_period_back'], interval = const['default_interval'], 
               period_BB = const['default_period_BB'], win_length_RSI = const['default_win_length_RSI'], period_slope = const['default_period_slope'],
@@ -94,20 +121,13 @@ def main_pipe(ticker = const['default_ticker'], period_back = const['default_per
 
     main_df = download_ticker(ticker, period_back, interval)
     main_df[const['upper_bound']], main_df[const['lower_bound']], main_df[const['rolling_mean'] + f'{period_BB}'] = BolBands(main_df, period_BB)
-    #main_df[const['RSI']] = RSI(main_df, win_length_RSI)
     main_df[const['slope']] = slope(main_df[const['close_col']], period_slope)
     main_df[const['close_shifted_col']] = main_df[const['close_col']].shift(-1).fillna(0)
-    #main_df[const['price_change_up']] = np.where(main_df[const['close_col']] > (main_df[const['close_shifted_col']] + (main_df[const['close_col']] * close_shifted_tolerance)), 1, 0)
-    #main_df[const['price_change_down']] = np.where(main_df[const['close_col']] < (main_df[const['close_shifted_col']] - (main_df[const['close_col']] * close_shifted_tolerance)), 1, 0)
-    # signals: 'sell' = -1, 'buy' = 1, hold = 0, 2 = undefined
-    main_df[const['signal_from_bb']] = np.where(main_df[const['close_col']] > main_df[const['upper_bound']], -1, 
-                                   np.where((main_df[const['close_col']] <= main_df[const['upper_bound']]) & (main_df[const['close_col']] >= main_df[const['lower_bound']]), 0,
-                                             np.where(main_df[const['close_col']] < main_df[const['lower_bound']], 1, 2)))
-    
     main_df[const['slope_cat_col']] = np.where((main_df[const['slope']] <= 30) & (main_df[const['slope']] >= -30), 0,
                                             np.where(main_df[const['slope']] > 30, 1, 
                                                      np.where(main_df[const['slope']] < -30, -1, 2)))
     main_df = train_and_pred_XGBR(main_df)
+    main_df = train_and_pred_AR(main_df)
 
     main_df = main_df.dropna()
     return main_df
