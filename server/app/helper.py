@@ -78,3 +78,15 @@ class HelperFunctions:
         y_test = y.loc[len(y)-test_size:].astype(np.float32)
 
         return X_train, X_test, y_train, y_test
+    
+
+class queue:
+
+    def __init__(self, values):
+        self.values = values
+
+    def pop_first(self):
+        self.values.pop(0)
+
+    def insert_last(self, value):
+        self.values.append(value)

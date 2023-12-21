@@ -5,6 +5,7 @@ import statsmodels.api as sm
 import yaml
 from xgboost import XGBRegressor
 from helper import HelperFunctions as hf
+from helper import queue as q
 from neural_networks import AR_NN as ar
 from sklearn.metrics import mean_absolute_error
 
@@ -90,32 +91,7 @@ def train_and_pred_XGBR(df):
     
     return df
 
-def train_and_pred_AR(df):
-    df_copy = df.copy()
-    series_to_ar = const['series_to_ar']
-    model_params = const['AR_model_params']
-    loss = model_params['loss']
-    optimizer = model_params['optimizer']
-    activation_function = model_params['activation_function']
-    lag = model_params['lag']
-    test_size = model_params['test_size']
-    epochs = model_params['epochs']
-    series_to_predict = {}
-
-
-    for series_name in series_to_ar:
-        series_to_predict.update({series_name : df_copy[series_name]})
-        X_train, X_test, y_train, y_test = hf.train_test_split_AR(df_copy[series_name], lag = lag, test_size = test_size)
-        model = ar(activation_function=activation_function, loss = loss, optimizer = optimizer)
-        model.fit(X_train, y_train, epochs = epochs)
-        prediction = model.predict(X_test)
-        mae = mean_absolute_error(y_test, prediction)
-        print(f"Model for {series_name} has {mae:.2f} absolute error!")
-        print(f"Last value of {series_name}: {df_copy.reset_index().loc[len(df_copy)-1, series_name]}. \n Predicted next value of {series_name}: {prediction[-1]}!")
-
-    return df_copy 
-
-def main_pipe(ticker = const['default_ticker'], period_back = const['default_period_back'], interval = const['default_interval'], 
+def main_df_pipe(ticker = const['default_ticker'], period_back = const['default_period_back'], interval = const['default_interval'], 
               period_BB = const['default_period_BB'], win_length_RSI = const['default_win_length_RSI'], period_slope = const['default_period_slope'],
               close_shifted_tolerance = const['default_close_shifted_tolerance']):
 
@@ -127,7 +103,61 @@ def main_pipe(ticker = const['default_ticker'], period_back = const['default_per
                                             np.where(main_df[const['slope']] > 30, 1, 
                                                      np.where(main_df[const['slope']] < -30, -1, 2)))
     main_df = train_and_pred_XGBR(main_df)
-    main_df = train_and_pred_AR(main_df)
 
     main_df = main_df.dropna()
     return main_df
+
+def predict_multiple_steps(model, arr_to_predict, steps_to_predict):
+
+    new_line = q(arr_to_predict.iloc[-1, :].values.tolist())
+
+    for _ in range(steps_to_predict):
+        prediction = model.predict(arr_to_predict)
+        new_line.pop_first()
+        new_line.insert_last(prediction[-1, 0])
+        arr_to_predict = pd.concat((arr_to_predict, pd.DataFrame(np.array(new_line.values).reshape((1, -1)), columns = arr_to_predict.columns))) 
+
+    return arr_to_predict   
+
+def train_and_pred_AR(df):
+    df_copy = df.copy()
+    series_to_ar = const['series_to_ar']
+    model_params = const['AR_model_params']
+    loss = model_params['loss']
+    optimizer = model_params['optimizer']
+    activation_function = model_params['activation_function']
+    lag = model_params['lag']
+    test_size = model_params['test_size']
+    epochs = model_params['epochs']
+    steps_to_predict = const['AR_steps_to_predict']
+    series_to_predict = {}
+
+    for series_name in series_to_ar:
+        X_train, X_test, y_train, y_test = hf.train_test_split_AR(df_copy[series_name], lag = lag, test_size = test_size)
+        model = ar(activation_function=activation_function, loss = loss, optimizer = optimizer)
+        model.fit(X_train, y_train, epochs = epochs)
+        prediction = model.predict(X_test)
+        mae = mean_absolute_error(y_test, prediction)
+        print(f"Model for {series_name} has {mae:.2f} absolute error!")
+        print(f"Last value of {series_name}: {df_copy.reset_index().loc[len(df_copy)-1, series_name]}. \n Predicted next value of {series_name}: {prediction[-1]}!")
+        pred_df = predict_multiple_steps(model, X_test, steps_to_predict)
+        series_to_predict.update({series_name : (pred_df, X_test, y_test)})
+
+    return series_to_predict
+
+def ar_pipe(df):
+    results = train_and_pred_AR(df)
+
+    return results
+
+
+def main_pipe(ticker = const['default_ticker'], period_back = const['default_period_back'], interval = const['default_interval'], 
+            period_BB = const['default_period_BB'], win_length_RSI = const['default_win_length_RSI'], period_slope = const['default_period_slope'],
+            close_shifted_tolerance = const['default_close_shifted_tolerance']):
+
+    main_df = main_df_pipe(ticker = ticker, period_back = period_back, interval = interval, 
+                            period_BB = period_BB, win_length_RSI = win_length_RSI, period_slope = period_slope,
+                            close_shifted_tolerance = close_shifted_tolerance)
+    ar_predictions = ar_pipe(main_df)
+
+    return main_df, ar_predictions
