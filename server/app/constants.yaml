@@ -32,7 +32,7 @@ AR_steps_to_predict : 10
 
 # LISTS
 f_cols : ['Open', 'High', 'Low', 'Volume', 'Dividends', 'Stock Splits', 'upper_bound', 'lower_bound', 'rolling_mean_20', 'slope']
-series_to_ar : ['Close']
+series_to_ar : ['Close', 'Open', 'High', 'Low']
 
 
 # DICTS
@@ -52,4 +52,4 @@ AR_model_params : {'loss' : 'mse',
                    'activation_function' : 'relu',
                    'lag' : 10,
                    'test_size' : 30,
-                   'epochs' : 100}
+                   'epochs' : 50}
