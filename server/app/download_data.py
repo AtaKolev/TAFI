@@ -91,9 +91,40 @@ def train_and_pred_XGBR(df):
     
     return df
 
+def breakout_calculations(df):
+
+    df_copy = df.copy()
+    df_copy[const['slow_rolling_mean_name']] = df[const['close_col']].rolling(const['slow_rolling_mean_period']).mean()
+    df_copy[const['ema_name']] = df[const['close_col']].ewm(span = const['ema_period']).mean()
+    df_copy[const['ema_ma_diff']] = df_copy[const['ema_name']] - df_copy[const['slow_rolling_mean_name']]
+
+    return df_copy
+
+def breakout(df, period_to_look_back = const['period_to_look_back_breakout'], test = False):
+    df_copy = df.copy()
+    df_copy = breakout_calculations(df_copy)
+    if test:
+        sample = df_copy.reset_index()
+    else:
+        sample = df_copy.reset_index().loc[len(df_copy)-period_to_look_back:, :]
+    sample[const['signal']] = 0
+
+    for idx in sample.index:
+        try:
+            if (sample.loc[(idx-1), const['ema_ma_diff']] < 0) and (sample.loc[idx, const['ema_ma_diff']] >= 0):
+                sample.loc[idx, const['signal']] = 1
+            elif (sample.loc[(idx-1), const['ema_ma_diff']] > 0) and (sample.loc[idx, const['ema_ma_diff']] <= 0):
+                sample.loc[idx, const['signal']] = -1
+            else:
+                sample.loc[idx, const['signal']] = 0
+        except Exception as e:
+            print(e)
+
+    return sample
+
 def main_df_pipe(ticker = const['default_ticker'], period_back = const['default_period_back'], interval = const['default_interval'], 
               period_BB = const['default_period_BB'], win_length_RSI = const['default_win_length_RSI'], period_slope = const['default_period_slope'],
-              close_shifted_tolerance = const['default_close_shifted_tolerance']):
+              close_shifted_tolerance = const['default_close_shifted_tolerance'], test = False):
 
     main_df = download_ticker(ticker, period_back, interval)
     main_df[const['upper_bound']], main_df[const['lower_bound']], main_df[const['rolling_mean'] + f'{period_BB}'] = BolBands(main_df, period_BB)
@@ -103,9 +134,10 @@ def main_df_pipe(ticker = const['default_ticker'], period_back = const['default_
                                             np.where(main_df[const['slope']] > 30, 1, 
                                                      np.where(main_df[const['slope']] < -30, -1, 2)))
     main_df = train_and_pred_XGBR(main_df)
-
+    df_to_breakout = breakout(main_df, test = test)
     main_df = main_df.dropna()
-    return main_df
+
+    return main_df, df_to_breakout
 
 def predict_multiple_steps(model, arr_to_predict, steps_to_predict):
 
